@@ -16,11 +16,29 @@
       <h1 id="app-title">Gemini EngCard</h1>
       <p id="app-subtitle">拍攝課本單字 ➔ 智慧分析 ➔ 完美複習與發音</p>
       
-      <!-- API settings trigger button -->
-      <button id="btn-trigger-settings" class="settings-trigger" aria-label="設定 Gemini API 金鑰">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
-        <span>Gemini API 金鑰設定</span>
-      </button>
+      <!-- Actions Container (Right-aligned in desktop) -->
+      <div class="header-actions">
+        <!-- API settings trigger button -->
+        <button id="btn-trigger-settings" class="settings-trigger" aria-label="設定 Gemini API 金鑰">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          <span>Gemini API 金鑰設定</span>
+        </button>
+
+        <!-- Actions second row (contains 2 buttons horizontally on desktop) -->
+        <div class="header-actions-row">
+          <!-- Manual Add button -->
+          <button id="btn-manual-add" class="settings-trigger manual-add-btn" aria-label="手動新增單字">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>手動新增單字</span>
+          </button>
+
+          <!-- Delete Custom Deck button -->
+          <button id="btn-delete-custom" class="settings-trigger delete-custom-btn" aria-label="刪除上傳單字">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+            <span>刪除上傳單字</span>
+          </button>
+        </div>
+      </div>
     </header>
 
     <!-- Slide Down Settings Panel -->
@@ -150,6 +168,49 @@
   <footer>
     <p>&copy; 2026 Gemini EngCard Learning Tool. Powered by Google Gemini 2.5 Flash.</p>
   </footer>
+
+  <!-- Manual Add Word Modal -->
+  <div id="modal-manual-add" class="modal-overlay" aria-hidden="true" role="dialog" aria-labelledby="modal-title">
+    <div class="modal-content">
+      <button id="btn-close-modal" class="modal-close-btn" aria-label="關閉彈窗">&times;</button>
+      <h3 id="modal-title">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        手動新增單字卡
+      </h3>
+      <p class="modal-subtitle">無需拍照分析，您可以直接在下方欄位手動輸入新的英文單字。</p>
+      
+      <form id="form-manual-add" onsubmit="return false;">
+        <div class="form-group">
+          <label for="input-manual-word">英文單字 <span class="required">*</span></label>
+          <input type="text" id="input-manual-word" placeholder="例如: spectacular" required autocomplete="off">
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="input-manual-phonetic">音標 (選填)</label>
+            <input type="text" id="input-manual-phonetic" placeholder="例如: /spekˈtækjələr/" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label for="input-manual-syllables">音節標記 (選填)</label>
+            <input type="text" id="input-manual-syllables" placeholder="例如: spec · tac · u · lar" autocomplete="off">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="input-manual-explanation">中文解釋 <span class="required">*</span></label>
+          <input type="text" id="input-manual-explanation" placeholder="例如: 壯觀的，雄偉的" required autocomplete="off">
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" id="btn-cancel-manual" class="btn btn-secondary">取消</button>
+          <button type="submit" id="btn-submit-manual" class="btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            儲存單字
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <script type="module" src="/app.js"></script>
 </body>

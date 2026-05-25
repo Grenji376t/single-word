@@ -322,6 +322,115 @@ function initEventListeners() {
 
   if (tabSample) tabSample.addEventListener('click', switchTabHandler);
   if (tabCustom) tabCustom.addEventListener('click', switchTabHandler);
+
+  // --- 手動新增單字與刪除上傳單字功能 ---
+
+  // 1. 刪除上傳單字邏輯
+  const btnDeleteCustom = document.getElementById('btn-delete-custom');
+  if (btnDeleteCustom) {
+    btnDeleteCustom.addEventListener('click', () => {
+      if (customVocabulary.length === 0) {
+        showToast("「我分析的單字」頁面目前已無任何單字！", true);
+        return;
+      }
+
+      const confirmDelete = confirm("確定要清空所有您上傳或新增的單字嗎？此動作無法復原！");
+      if (confirmDelete) {
+        customVocabulary = [];
+        saveCustomVocabulary();
+        
+        // 重新渲染並更新統計
+        if (currentDeck === 'custom') {
+          renderVocabulary();
+        }
+        updateDeckStats();
+        
+        showToast("已成功清除所有已分析與手動新增的單字。");
+      }
+    });
+  }
+
+  // 2. 顯示/隱藏手動新增單字 Modal
+  const btnManualAdd = document.getElementById('btn-manual-add');
+  const modalManualAdd = document.getElementById('modal-manual-add');
+  const btnCloseModal = document.getElementById('btn-close-modal');
+  const btnCancelManual = document.getElementById('btn-cancel-manual');
+  const formManualAdd = document.getElementById('form-manual-add');
+
+  const openModal = () => {
+    if (modalManualAdd) {
+      modalManualAdd.classList.add('open');
+      modalManualAdd.setAttribute('aria-hidden', 'false');
+      // Focus on first input
+      const firstInput = document.getElementById('input-manual-word');
+      if (firstInput) firstInput.focus();
+    }
+  };
+
+  const closeModal = () => {
+    if (modalManualAdd) {
+      modalManualAdd.classList.remove('open');
+      modalManualAdd.setAttribute('aria-hidden', 'true');
+    }
+    if (formManualAdd) {
+      formManualAdd.reset();
+    }
+  };
+
+  if (btnManualAdd) btnManualAdd.addEventListener('click', openModal);
+  if (btnCloseModal) btnCloseModal.addEventListener('click', closeModal);
+  if (btnCancelManual) btnCancelManual.addEventListener('click', closeModal);
+  
+  // 點擊 Modal 背景遮罩也可以關閉
+  if (modalManualAdd) {
+    modalManualAdd.addEventListener('click', (e) => {
+      if (e.target === modalManualAdd) {
+        closeModal();
+      }
+    });
+  }
+
+  // 3. 表單送出新增單字
+  if (formManualAdd) {
+    formManualAdd.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const wordInput = document.getElementById('input-manual-word');
+      const phoneticInput = document.getElementById('input-manual-phonetic');
+      const syllablesInput = document.getElementById('input-manual-syllables');
+      const explanationInput = document.getElementById('input-manual-explanation');
+
+      if (!wordInput || !explanationInput) return;
+
+      const word = wordInput.value.trim();
+      const phonetic = phoneticInput ? phoneticInput.value.trim() : '';
+      const syllables = syllablesInput ? syllablesInput.value.trim() : '';
+      const explanation = explanationInput.value.trim();
+
+      if (!word || !explanation) {
+        showToast("請填寫英文單字與中文解釋！", true);
+        return;
+      }
+
+      // 建立新的單字卡物件
+      const newCard = {
+        word,
+        phonetic: phonetic || `/${word}/`, // 如果沒填寫音標，給予簡易格式
+        syllables: syllables || word,      // 如果沒填音節，預設為原單字
+        explanation
+      };
+
+      // 加入自訂單字庫最上方
+      customVocabulary = [newCard, ...customVocabulary];
+      saveCustomVocabulary();
+
+      // 切換至「我分析的單字」頁面，並重新整理
+      switchToDeck('custom');
+      
+      showToast(`已成功手動新增單字卡：「${word}」！`);
+      closeModal();
+    });
+  }
 }
 
 // Helper to switch active vocabulary deck
