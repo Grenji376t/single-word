@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>五十音覺醒 - 極致學習體驗</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+JP:wght@400;700;900&family=Noto+Sans+TC:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: 99, 102, 241;
+            --secondary: 168, 85, 247;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.4);
+        }
+
+        body {
+            font-family: 'Outfit', 'Noto Sans TC', 'Noto Sans JP', sans-serif;
+            background: radial-gradient(circle at top left, #f1f5f9 0%, #e2e8f0 100%);
+            overscroll-behavior: none;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 100vh;
+        }
+
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        }
+
+        .perspective {
+            perspective: 1500px;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+
+        .is-flipped-y {
+            transform: rotateY(180deg) scale(1.02);
+        }
+
+        .is-flipped-x {
+            transform: rotateX(180deg) scale(1.02);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .card-face::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50%);
+            pointer-events: none;
+        }
+
+        .card-back-y {
+            transform: rotateY(180deg);
+        }
+
+        .card-back-x {
+            transform: rotateX(180deg);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, rgb(var(--primary)), rgb(var(--secondary)));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .btn-premium {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-premium:active {
+            transform: scale(0.92);
+        }
+
+        .row-item.selected {
+            background: linear-gradient(135deg, rgb(var(--primary)), rgb(var(--secondary)));
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 10px 15px -3px rgba(var(--primary), 0.3);
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .floating {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        .safe-pb {
+            padding-bottom: env(safe-area-inset-bottom, 1.5rem);
+        }
+
+        .safe-pt {
+            padding-top: env(safe-area-inset-top, 1rem);
+        }
+    </style>
+</head>
+
+<body class="safe-pt flex flex-col items-center">
+
+    <header class="fixed top-0 w-full z-50 px-6 py-4 flex justify-between items-center safe-pt">
+        <button id="btn-home" onclick="goHome()"
+            class="glass px-4 py-2 rounded-full hidden flex items-center text-slate-700 hover:text-indigo-600 transition-all font-semibold bg-white/50">
+            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
+            </svg>
+            返回
+        </button>
+        <div class="flex-1 text-center">
+            <h1 id="app-title" class="text-xl font-extrabold tracking-tight text-slate-800 drop-shadow-sm">五十音覺醒</h1>
+        </div>
+        <div class="w-16"></div>
+    </header>
+
+    <main class="w-full max-w-md px-6 pt-20 pb-10 flex-1 flex flex-col items-center relative">
+
+        <!-- HOME VIEW -->
+        <section id="view-home" class="w-full space-y-6">
+            <div
+                class="relative overflow-hidden rounded-[2.5rem] p-8 glass text-slate-800 group transition-all hover:shadow-2xl">
+                <div
+                    class="absolute -top-10 -right-10 w-40 h-40 bg-indigo-200/50 rounded-full blur-3xl group-hover:bg-indigo-300/50 transition-all">
+                </div>
+                <h2 class="text-3xl font-black mb-2 gradient-text">哈囉，初學者！</h2>
+                <p class="text-slate-500 font-medium leading-relaxed text-sm">準備好讓你的日語能力覺醒了嗎？選個模式開始吧。</p>
+                <div class="mt-4 flex gap-2">
+                    <a href="MEnglish.html" class="inline-flex items-center px-4 py-2 bg-indigo-600/10 text-indigo-600 rounded-xl text-xs font-bold hover:bg-indigo-600/20 transition-all">
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5c1.382 3.307 3.416 6.333 5.03 9" />
+                        </svg>
+                        切換到 MEnglish
+                    </a>
+                </div>
+            </div>
+
+            <div class="grid gap-4">
+                <button onclick="selectAppMode('free')"
+                    class="glass p-6 rounded-[2rem] flex items-center gap-5 btn-premium group hover:bg-white active:bg-white/40">
+                    <div
+                        class="bg-indigo-600/10 text-indigo-600 p-4 rounded-2xl group-hover:rotate-6 transition-transform">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"
+                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5s3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                    </div>
+                    <div class="text-left">
+                        <h3 class="font-bold text-slate-800 text-lg">自由學習</h3>
+                        <p class="text-slate-400 text-xs mt-0.5">無壓力的視覺記憶，支援隨機打亂。</p>
+                    </div>
+                </button>
+
+                <button onclick="selectAppMode('anki')"
+                    class="glass p-6 rounded-[2rem] flex items-center gap-5 btn-premium group hover:bg-white active:bg-white/40">
+                    <div
+                        class="bg-purple-600/10 text-purple-600 p-4 rounded-2xl group-hover:rotate-6 transition-transform">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <div class="text-left">
+                        <h3 class="font-bold text-slate-800 text-lg">大腦記憶 (SRS)</h3>
+                        <p class="text-slate-400 text-xs mt-0.5">科學化的間隔重複，鎖定你的長期記憶。</p>
+                    </div>
+                </button>
+            </div>
+        </section>
+
+        <!-- SELECTION VIEW -->
+        <section id="view-selection" class="w-full hidden space-y-8 animate-fade-in">
+            <div class="space-y-4">
+                <h2 class="text-sm font-bold text-slate-400 uppercase tracking-widest flex items-center">
+                    <span class="w-8 h-[2px] bg-indigo-500 mr-2"></span> Step 1: 選擇範圍
+                </h2>
+                <div class="grid grid-cols-2 gap-3" id="row-selector-grid"></div>
+            </div>
+
+            <div class="space-y-4">
+                <h2 class="text-sm font-bold text-slate-400 uppercase tracking-widest flex items-center">
+                    <span class="w-8 h-[2px] bg-purple-500 mr-2"></span> Step 2: 文字類型
+                </h2>
+                <div class="flex gap-3 p-2 glass rounded-[2rem] bg-slate-100/50">
+                    <button onclick="setKanaMode('hiragana')" id="mode-hira"
+                        class="flex-1 py-3 rounded-2xl text-sm font-bold transition-all bg-white shadow-sm text-indigo-600">平假名</button>
+                    <button onclick="setKanaMode('katakana')" id="mode-kata"
+                        class="flex-1 py-3 rounded-2xl text-sm font-bold transition-all text-slate-500">片假名</button>
+                </div>
+            </div>
+
+            <div id="anki-stats-container" class="hidden">
+                <div class="glass p-5 rounded-[2rem] flex items-center justify-between border-indigo-100/50">
+                    <div class="flex items-center text-indigo-600 font-bold">
+                        <div class="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center mr-3">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="2.5"
+                                    stroke-linecap="round" />
+                            </svg>
+                        </div>
+                        複習進度
+                    </div>
+                    <span id="queue-stats" class="text-2xl font-black text-slate-800">0 / 0</span>
+                </div>
+            </div>
+
+            <button onclick="startLearning()" id="start-btn"
+                class="w-full py-5 bg-slate-900 text-white rounded-[2rem] font-bold text-lg shadow-2xl shadow-slate-300 hover:bg-black active:scale-95 transition-all disabled:opacity-20">
+                開始覺醒之旅
+            </button>
+        </section>
+
+        <!-- FREE LEARN VIEW -->
+        <section id="view-free-learn" class="w-full hidden flex flex-col gap-6">
+            <div class="w-full glass rounded-[2rem] p-4 flex items-center justify-between">
+                <div class="flex flex-col">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Current Progress</span>
+                    <span id="free-progress-text" class="text-sm font-black text-slate-700">1 / 10</span>
+                </div>
+                <div class="flex-1 mx-6 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div id="free-progress-bar" class="progress-bar h-full bg-indigo-500 rounded-full w-0"
+                        style="transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)"></div>
+                </div>
+                <span id="free-progress-percent"
+                    class="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-[10px] font-black uppercase">あ</span>
+            </div>
+
+            <div class="perspective w-full aspect-[4/5] relative">
+                <div id="free-card-inner" class="card-inner" onclick="this.classList.toggle('is-flipped-y')">
+                    <div class="card-face glass free-front border-2 border-white/50 bg-white">
+                        <span id="free-char"
+                            class="text-[min(10rem,25vw)] font-black text-slate-800 drop-shadow-sm select-none">あ</span>
+                        <div class="absolute bottom-10 flex flex-col items-center">
+                            <span class="text-[10px] font-bold text-slate-300 uppercase tracking-[0.3em] mb-2">Tap to
+                                Discover</span>
+                            <div class="w-8 h-1 bg-slate-200 rounded-full"></div>
+                        </div>
+                    </div>
+                    <div class="card-face bg-gradient-to-br from-indigo-600 to-purple-700 card-back-y text-white">
+                        <!-- Romaji Content -->
+                        <span id="free-romaji" class="text-8xl font-black drop-shadow-xl select-none">a</span>
+                        
+                        <!-- Pronunciation Button -->
+                        <button onclick="event.stopPropagation(); playSound()"
+                            class="mt-10 p-5 bg-white/20 rounded-full hover:bg-white/30 active:scale-90 transition-all shadow-lg border border-white/30">
+                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M11 5L6 9H2v6h4l5 4V5zM15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"
+                                    stroke-width="2.5" stroke-linecap="round" />
+                            </svg>
+                        </button>
+
+                        <div class="absolute bottom-10 text-[10px] font-bold text-white/50 uppercase tracking-[0.3em]">
+                            Pronunciation</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center px-4 safe-pb mt-4">
+                <button onclick="freePrev()" class="glass p-5 rounded-3xl btn-premium text-slate-600 bg-white/50">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M15 19l-7-7 7-7" stroke-width="3" stroke-linecap="round" />
+                    </svg>
+                </button>
+                <button onclick="freeShuffle()" class="glass p-5 rounded-3xl btn-premium text-slate-400 bg-white/50">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                            stroke-width="2.5" stroke-linecap="round" />
+                    </svg>
+                </button>
+                <button onclick="freeNext()"
+                    class="bg-indigo-600 p-5 rounded-3xl btn-premium text-white shadow-xl shadow-indigo-200">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M9 5l7 7-7 7" stroke-width="3" stroke-linecap="round" />
+                    </svg>
+                </button>
+            </div>
+        </section>
+
+        <!-- ANKI LEARN VIEW -->
+        <section id="view-anki-learn" class="w-full hidden flex flex-col gap-6">
+            <div class="flex justify-between items-center px-2">
+                <span id="anki-mode-badge"
+                    class="px-4 py-1.5 glass rounded-full text-[10px] font-black uppercase text-indigo-600 tracking-wider">Hiragana</span>
+                <div class="flex gap-4">
+                    <div class="flex items-center bg-blue-50/50 rounded-lg px-2 py-1">
+                        <div class="w-2 h-2 rounded-full bg-blue-400 mr-2"></div><span id="count-new"
+                            class="text-xs font-black text-blue-600">0</span>
+                    </div>
+                    <div class="flex items-center bg-red-50/50 rounded-lg px-2 py-1">
+                        <div class="w-2 h-2 rounded-full bg-red-400 mr-2"></div><span id="count-learn"
+                            class="text-xs font-black text-red-600">0</span>
+                    </div>
+                    <div class="flex items-center bg-green-50/50 rounded-lg px-2 py-1">
+                        <div class="w-2 h-2 rounded-full bg-green-400 mr-2"></div><span id="count-review"
+                            class="text-xs font-black text-green-600">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="perspective w-full aspect-[4/5] relative">
+                <div id="anki-card-inner" class="card-inner">
+                    <div class="card-face glass anki-front border-2 border-white/50 cursor-pointer bg-white"
+                        onclick="showAnkiAnswer()">
+                        <span id="anki-char"
+                            class="text-[min(10rem,25vw)] font-black text-slate-800 drop-shadow-sm select-none">あ</span>
+                        <div class="absolute bottom-12 flex flex-col items-center">
+                            <span class="text-[10px] font-bold text-slate-300 uppercase tracking-[0.3em] mb-2">Show
+                                Answer</span>
+                            <div class="w-8 h-1 bg-slate-200 rounded-full"></div>
+                        </div>
+                    </div>
+                    <div class="card-face glass anki-back card-back-x overflow-hidden bg-white">
+                        <div class="absolute inset-0 bg-gradient-to-br from-indigo-50/30 to-purple-50/30 -z-10"></div>
+                        <span id="anki-char-back" class="text-2xl font-bold text-slate-400 mb-4 select-none">あ</span>
+                        <span id="anki-romaji"
+                            class="text-8xl font-black gradient-text select-none drop-shadow-sm">a</span>
+                        
+                        <!-- Pronunciation Button -->
+                        <button onclick="playSound()"
+                            class="mt-10 p-5 glass rounded-full text-indigo-600 hover:bg-white active:scale-90 transition-all bg-white/50 border border-indigo-100 shadow-md">
+                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M11 5L6 9H2v6h4l5 4V5zM15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"
+                                    stroke-width="2.5" stroke-linecap="round" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-auto px-2 safe-pb">
+                <button id="btn-show-answer" onclick="showAnkiAnswer()"
+                    class="w-full py-6 glass rounded-[2.5rem] font-black text-xl text-slate-800 shadow-xl btn-premium bg-white/50 active:bg-slate-100">
+                    解開謎底
+                </button>
+                <div id="rating-buttons" class="grid grid-cols-4 gap-3 hidden">
+                    <button onclick="rateCard(1)"
+                        class="flex flex-col items-center py-4 bg-red-600 text-white rounded-3xl btn-premium shadow-lg shadow-red-100">
+                        <span id="time-1" class="text-[10px] font-bold opacity-60 mb-1">1m</span>
+                        <span class="font-black text-xs uppercase tracking-widest">重來</span>
+                    </button>
+                    <button onclick="rateCard(2)"
+                        class="flex flex-col items-center py-4 bg-orange-500 text-white rounded-3xl btn-premium shadow-lg shadow-orange-100">
+                        <span id="time-2" class="text-[10px] font-bold opacity-60 mb-1">6m</span>
+                        <span class="font-black text-xs uppercase tracking-widest">困難</span>
+                    </button>
+                    <button onclick="rateCard(3)"
+                        class="flex flex-col items-center py-4 bg-emerald-500 text-white rounded-3xl btn-premium shadow-lg shadow-emerald-100">
+                        <span id="time-3" class="text-[10px] font-bold opacity-60 mb-1">10m</span>
+                        <span class="font-black text-xs uppercase tracking-widest">良好</span>
+                    </button>
+                    <button onclick="rateCard(4)"
+                        class="flex flex-col items-center py-4 bg-blue-500 text-white rounded-3xl btn-premium shadow-lg shadow-blue-100">
+                        <span id="time-4" class="text-[10px] font-bold opacity-60 mb-1">4d</span>
+                        <span class="font-black text-xs uppercase tracking-widest">簡單</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ANKI DONE VIEW -->
+        <section id="view-anki-done" class="w-full hidden glass rounded-[3rem] p-10 text-center space-y-8 floating bg-white/80">
+            <div
+                class="relative w-24 h-24 bg-indigo-600 rounded-full mx-auto flex items-center justify-center text-white text-5xl shadow-2xl">
+                🏆
+                <div class="absolute inset-0 bg-indigo-600 rounded-full animate-ping opacity-20"></div>
+            </div>
+            <div class="space-y-2">
+                <h2 class="text-3xl font-black text-slate-800">修練完成！</h2>
+                <p class="text-slate-400 font-medium text-sm">今天的目標已達成，讓潛意識發揮作用吧。</p>
+            </div>
+            <div class="bg-indigo-50/50 p-6 rounded-3xl space-y-1">
+                <span class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Next Evolution In</span>
+                <span id="next-due-time" class="block text-2xl font-black text-indigo-600">無訊號</span>
+            </div>
+            <button onclick="goBackToSelection()"
+                class="w-full py-5 bg-slate-900 text-white rounded-[2rem] font-bold hover:bg-black transition-all shadow-xl">
+                回到道場
+            </button>
+        </section>
+
+    </main>
+
+    <script>
+        // ==================== DATA & CONSTANTS ====================
+        const kanaRows = [
+            { id: 'a', label: 'あ (a)', chars: [{ h: 'あ', k: 'ア', r: 'a' }, { h: 'い', k: 'イ', r: 'i' }, { h: 'う', k: 'ウ', r: 'u' }, { h: 'え', k: 'エ', r: 'e' }, { h: 'お', k: 'オ', r: 'o' }] },
+            { id: 'ka', label: 'か (ka)', chars: [{ h: 'か', k: 'カ', r: 'ka' }, { h: 'き', k: 'キ', r: 'ki' }, { h: 'く', k: 'ク', r: 'ku' }, { h: 'け', k: 'ケ', r: 'ke' }, { h: 'こ', k: 'コ', r: 'ko' }] },
+            { id: 'sa', label: 'さ (sa)', chars: [{ h: 'さ', k: 'サ', r: 'sa' }, { h: 'し', k: 'シ', r: 'shi' }, { h: 'す', k: 'ス', r: 'su' }, { h: 'せ', k: 'セ', r: 'se' }, { h: 'そ', k: 'ソ', r: 'so' }] },
+            { id: 'ta', label: 'た (ta)', chars: [{ h: 'た', k: '塔', r: 'ta' }, { h: 'ち', k: 'チ', r: 'chi' }, { h: 'つ', k: 'ツ', r: 'tsu' }, { h: 'て', k: 'テ', r: 'te' }, { h: 'と', k: '托', r: 'to' }] },
+            { id: 'na', label: 'な (na)', chars: [{ h: 'な', k: '納', r: 'na' }, { h: 'に', k: '尼', r: 'ni' }, { h: 'ぬ', k: '努', r: 'nu' }, { h: 'ね', k: '內', r: 'ne' }, { h: 'の', k: '諾', r: 'no' }] },
+            { id: 'ha', label: 'は (ha)', chars: [{ h: 'は', k: '哈', r: 'ha' }, { h: 'ひ', k: '希', r: 'hi' }, { h: 'ふ', k: '夫', r: 'fu' }, { h: 'へ', k: '黑', r: 'he' }, { h: 'ほ', k: '霍', r: 'ho' }] },
+            { id: 'ma', label: 'ま (ma)', chars: [{ h: 'ま', k: '馬', r: 'ma' }, { h: 'み', k: '米', r: 'mi' }, { h: 'む', k: '木', r: 'mu' }, { h: 'め', k: '美', r: 'me' }, { h: 'も', k: '摩', r: 'mo' }] },
+            { id: 'ya', label: 'や (ya)', chars: [{ h: 'や', k: '亞', r: 'ya' }, { h: 'ゆ', k: '由', r: 'yu' }, { h: 'よ', k: '約', r: 'yo' }] },
+            { id: 'ra', label: 'ら (ra)', chars: [{ h: 'ら', k: '拉', r: 'ra' }, { h: 'り', k: '里', r: 'ri' }, { h: 'る', k: '路', r: 'ru' }, { h: 'れ', k: '列', r: 're' }, { h: 'ろ', k: '路', r: 'ro' }] },
+            { id: 'wa', label: 'わ (wa)', chars: [{ h: 'わ', k: '哇', r: 'wa' }, { h: 'を', k: '我', r: 'wo' }, { h: 'ん', k: '恩', r: 'n' }] }
+        ];
+
+        let currentAppMode = 'home';
+        let kanaMode = 'hiragana';
+        let selectedRowIds = new Set();
+        let activePool = [];
+        let currentCardItem = null;
+        let freeIndex = 0;
+        let srsData = JSON.parse(localStorage.getItem('anki_kana_master_data')) || {};
+        let ankiIntervalId = null;
+
+        // ==================== AUDIO LOGIC ====================
+        let audioPlayer = new Audio();
+        function playSound() {
+            if (!currentCardItem) return;
+            const textToSpeak = kanaMode === 'hiragana' ? currentCardItem.h : currentCardItem.k;
+            const googleTtsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(textToSpeak)}&tl=ja&client=tw-ob`;
+            audioPlayer.src = googleTtsUrl;
+            audioPlayer.play().catch(err => {
+                console.warn("Google TTS failed, falling back to system speech.", err);
+                window.speechSynthesis.cancel();
+                const ut = new SpeechSynthesisUtterance(textToSpeak);
+                ut.lang = 'ja-JP';
+                ut.rate = 0.8;
+                window.speechSynthesis.speak(ut);
+            });
+        }
+
+        // ==================== NAVIGATION ====================
+        function hideAllViews() {
+            ['view-home', 'view-selection', 'view-free-learn', 'view-anki-learn', 'view-anki-done'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+        }
+
+        function goHome() {
+            hideAllViews();
+            document.getElementById('view-home').classList.remove('hidden');
+            document.getElementById('btn-home').classList.add('hidden');
+            document.getElementById('app-title').textContent = '五十音覺醒';
+            currentAppMode = 'home';
+            if (ankiIntervalId) clearInterval(ankiIntervalId);
+        }
+
+        function selectAppMode(mode) {
+            currentAppMode = mode;
+            hideAllViews();
+            document.getElementById('view-selection').classList.remove('hidden');
+            document.getElementById('btn-home').classList.remove('hidden');
+            document.getElementById('app-title').textContent = (mode === 'free' ? '自由修練' : '大腦修復');
+            document.getElementById('anki-stats-container').classList.toggle('hidden', mode === 'free');
+            renderRowSelector();
+            updateSelectionState();
+        }
+
+        function goBackToSelection() { selectAppMode(currentAppMode); }
+
+        // ==================== SELECTION ====================
+        function renderRowSelector() {
+            const grid = document.getElementById('row-selector-grid');
+            if (grid.innerHTML !== '') return;
+            kanaRows.forEach(row => {
+                const btn = document.createElement('button');
+                btn.id = `row-btn-${row.id}`;
+                btn.className = 'glass p-3 rounded-2xl text-sm font-bold flex items-center justify-between btn-premium border-white/50 text-slate-600 bg-white/30';
+                btn.innerHTML = `<span>${row.label}</span><span class="text-[9px] opacity-40 font-black">${row.chars.length}</span>`;
+                btn.onclick = () => toggleRow(row.id);
+                grid.appendChild(btn);
+            });
+        }
+
+        function toggleRow(id) {
+            const btn = document.getElementById(`row-btn-${id}`);
+            if (selectedRowIds.has(id)) {
+                selectedRowIds.delete(id);
+                btn.classList.remove('selected');
+            } else {
+                selectedRowIds.add(id);
+                btn.classList.add('selected');
+                if (window.navigator.vibrate) window.navigator.vibrate(10);
+            }
+            updateSelectionState();
+        }
+
+        function setKanaMode(mode) {
+            kanaMode = mode;
+            document.getElementById('mode-hira').className = `flex-1 py-3 rounded-2xl text-sm font-bold transition-all ${mode === 'hiragana' ? 'bg-white shadow-md text-indigo-600' : 'text-slate-400'}`;
+            document.getElementById('mode-kata').className = `flex-1 py-3 rounded-2xl text-sm font-bold transition-all ${mode === 'katakana' ? 'bg-white shadow-md text-indigo-600' : 'text-slate-400'}`;
+            updateSelectionState();
+        }
+
+        function updateSelectionState() {
+            activePool = [];
+            selectedRowIds.forEach(id => {
+                activePool = [...activePool, ...kanaRows.find(r => r.id === id).chars];
+            });
+            const btn = document.getElementById('start-btn');
+            btn.disabled = selectedRowIds.size === 0;
+            btn.innerHTML = selectedRowIds.size > 0 ? `開始覺醒 (${activePool.length} 字)` : '請踏出第一步';
+            if (currentAppMode === 'anki') {
+                let newCnt = 0, dueCnt = 0;
+                const now = Date.now();
+                activePool.forEach(item => {
+                    const st = srsData[`${kanaMode}_${item.r}`];
+                    if (!st) newCnt++; else if (st.nextReview <= now) dueCnt++;
+                });
+                document.getElementById('queue-stats').textContent = `${dueCnt} / ${newCnt}`;
+            }
+        }
+
+        function startLearning() {
+            hideAllViews();
+            if (currentAppMode === 'free') {
+                document.getElementById('view-free-learn').classList.remove('hidden');
+                document.getElementById('free-progress-percent').textContent = (kanaMode === 'hiragana' ? 'あ' : 'ア');
+                freeIndex = 0;
+                updateFreeCard();
+            } else {
+                document.getElementById('view-anki-learn').classList.remove('hidden');
+                document.getElementById('anki-mode-badge').textContent = (kanaMode === 'hiragana' ? 'Hiragana' : 'Katakana');
+                if (ankiIntervalId) clearInterval(ankiIntervalId);
+                ankiIntervalId = setInterval(checkAnkiTimer, 15000);
+                nextAnkiCard();
+            }
+        }
+
+        // ==================== FREE MODE ====================
+        function updateFreeCard() {
+            const cardInner = document.getElementById('free-card-inner');
+            cardInner.style.transition = 'none';
+            cardInner.classList.remove('is-flipped-y');
+            void cardInner.offsetWidth;
+            cardInner.style.transition = '';
+
+            currentCardItem = activePool[freeIndex];
+            document.getElementById('free-char').textContent = kanaMode === 'hiragana' ? currentCardItem.h : currentCardItem.k;
+            document.getElementById('free-romaji').textContent = currentCardItem.r;
+
+            const total = activePool.length;
+            const cur = freeIndex + 1;
+            document.getElementById('free-progress-text').textContent = `${cur} / ${total}`;
+            document.getElementById('free-progress-bar').style.width = `${(cur / total) * 100}%`;
+        }
+
+        function freeNext() { freeIndex = (freeIndex + 1) % activePool.length; updateFreeCard(); }
+        function freePrev() { freeIndex = (freeIndex - 1 + activePool.length) % activePool.length; updateFreeCard(); }
+        function freeShuffle() {
+            for (let i = activePool.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [activePool[i], activePool[j]] = [activePool[j], activePool[i]];
+            }
+            freeIndex = 0; updateFreeCard();
+        }
+
+        // ==================== ANKI MODE ====================
+        function getAnkiCardId(item) { return `${kanaMode}_${item.r}`; }
+
+        function nextAnkiCard() {
+            const now = Date.now();
+            let newCards = [], dueCards = [], learningCards = [], futureCards = [];
+            activePool.forEach(item => {
+                const s = srsData[getAnkiCardId(item)];
+                if (!s) newCards.push(item);
+                else if (s.nextReview <= now) (s.interval < 10 ? learningCards : dueCards).push(item);
+                else futureCards.push({ item, time: s.nextReview });
+            });
+
+            document.getElementById('count-new').textContent = newCards.length;
+            document.getElementById('count-learn').textContent = learningCards.length;
+            document.getElementById('count-review').textContent = dueCards.length;
+
+            if (learningCards.length > 0) currentCardItem = learningCards[0];
+            else if (dueCards.length > 0) currentCardItem = dueCards[0];
+            else if (newCards.length > 0) currentCardItem = newCards[0];
+            else {
+                currentCardItem = null;
+                showAnkiDoneScreen(futureCards);
+                return;
+            }
+            renderAnkiCardFront();
+        }
+
+        function renderAnkiCardFront() {
+            const inner = document.getElementById('anki-card-inner');
+            inner.style.transition = 'none';
+            inner.classList.remove('is-flipped-x');
+            void inner.offsetWidth;
+            inner.style.transition = '';
+
+            const displayChar = (kanaMode === 'hiragana' ? currentCardItem.h : currentCardItem.k);
+            document.getElementById('anki-char').textContent = displayChar;
+            document.getElementById('anki-char-back').textContent = displayChar;
+            document.getElementById('anki-romaji').textContent = currentCardItem.r;
+            document.getElementById('btn-show-answer').classList.remove('hidden');
+            document.getElementById('rating-buttons').classList.add('hidden');
+        }
+
+        function showAnkiAnswer() {
+            if (document.getElementById('btn-show-answer').classList.contains('hidden')) return;
+            document.getElementById('anki-card-inner').classList.add('is-flipped-x');
+            document.getElementById('btn-show-answer').classList.add('hidden');
+            document.getElementById('rating-buttons').classList.remove('hidden');
+            playSound();
+            calcAnkiIntervals();
+        }
+
+        function calcAnkiIntervals() {
+            const s = srsData[getAnkiCardId(currentCardItem)] || { interval: 0, ease: 2.5 };
+            let ints = [0.5, Math.max(1, Math.round(s.interval * 1.2)), Math.max(10, Math.round(s.interval * s.ease)), Math.max(5760, Math.round(s.interval * s.ease * 1.3))];
+            window.currentAnkiIntervals = ints;
+            const fmt = (m) => m < 1 ? '<1m' : m < 60 ? `${m}m` : m < 1440 ? `${Math.round(m / 60)}h` : `${Math.round(m / 1440)}d`;
+            for (let i = 1; i <= 4; i++) document.getElementById(`time-${i}`).textContent = fmt(ints[i - 1]);
+        }
+
+        function rateCard(rat) {
+            const id = getAnkiCardId(currentCardItem);
+            let s = srsData[id] || { ease: 2.5, interval: 0 };
+            if (rat === 1) s.ease = Math.max(1.3, s.ease - 0.2);
+            if (rat === 4) s.ease += 0.15;
+            s.interval = window.currentAnkiIntervals[rat - 1];
+            s.nextReview = Date.now() + (s.interval * 60 * 1000);
+            srsData[id] = s;
+            localStorage.setItem('anki_kana_master_data', JSON.stringify(srsData));
+            nextAnkiCard();
+        }
+
+        function showAnkiDoneScreen(future) {
+            hideAllViews();
+            document.getElementById('btn-home').classList.remove('hidden');
+            document.getElementById('view-anki-done').classList.remove('hidden');
+            const el = document.getElementById('next-due-time');
+            if (future.length > 0) {
+                future.sort((a, b) => a.time - b.time);
+                const dm = Math.round((future[0].time - Date.now()) / 60000);
+                el.textContent = dm < 60 ? `${dm} min` : dm < 1440 ? `${Math.round(dm / 60)} hrs` : 'Tomorrow';
+            } else el.textContent = "無排程";
+        }
+
+        function checkAnkiTimer() {
+            if (!document.getElementById('view-anki-done').classList.contains('hidden')) {
+                const now = Date.now();
+                if (activePool.some(item => { const s = srsData[getAnkiCardId(item)]; return s && s.nextReview <= now; })) {
+                    hideAllViews(); document.getElementById('view-anki-learn').classList.remove('hidden'); nextAnkiCard();
+                }
+            }
+        }
+
+        // ==================== KEYBOARD & TOUCH ====================
+        document.addEventListener('keydown', (e) => {
+            const isHomeHidden = document.getElementById('view-home').classList.contains('hidden');
+            const isSelectionHidden = document.getElementById('view-selection').classList.contains('hidden');
+            
+            if (!isHomeHidden || !isSelectionHidden) return;
+
+            // Audio Shortcut: ArrowUp (Works regardless of side)
+            if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                playSound();
+            }
+
+            if (currentAppMode === 'free' && !document.getElementById('view-free-learn').classList.contains('hidden')) {
+                if (e.key === 'ArrowRight') freeNext();
+                if (e.key === 'ArrowLeft') freePrev();
+                if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); document.getElementById('free-card-inner').classList.toggle('is-flipped-y'); }
+            } else if (currentAppMode === 'anki' && !document.getElementById('view-anki-learn').classList.contains('hidden')) {
+                const isFront = !document.getElementById('anki-card-inner').classList.contains('is-flipped-x');
+                if (isFront && (e.code === 'Space' || e.code === 'Enter')) { e.preventDefault(); showAnkiAnswer(); }
+                else if (!isFront && ['1', '2', '3', '4'].includes(e.key)) rateCard(parseInt(e.key));
+            }
+        });
+
+    </script>
+</body>
+
+</html>

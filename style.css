@@ -894,3 +894,602 @@ footer a:hover {
     padding: 1.5rem;
   }
 }
+
+.hidden {
+  display: none !important;
+}
+
+/* ==========================================================================
+   Memory Palace & SRS Spaced Repetition CSS Style System
+   ========================================================================== */
+
+/* Main Container Layout */
+.palace-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  animation: fadeIn 0.4s ease;
+}
+
+/* Header Panel: Sync & Import cards */
+.palace-header-panel {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 1.2rem;
+  width: 100%;
+}
+
+.sync-status-card, .import-card {
+  background-color: var(--bg-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: var(--transition-smooth);
+}
+
+.sync-status-card:hover, .import-card:hover {
+  border-color: rgba(43, 177, 165, 0.2);
+  box-shadow: 0 6px 20px rgba(43, 177, 165, 0.08);
+}
+
+.sync-status-header, .import-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--primary);
+}
+
+.sync-status-header svg, .import-header svg {
+  color: var(--primary);
+}
+
+.sync-icon {
+  animation: spin 10s linear infinite;
+}
+
+.sync-code-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 0.5rem 0.8rem;
+  border-radius: 8px;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  font-size: 0.85rem;
+}
+
+.sync-code-label {
+  color: var(--text-grey);
+}
+
+.sync-code-val {
+  font-family: monospace;
+  font-size: 0.95rem;
+  color: #a7eed6;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  user-select: all;
+}
+
+.sync-actions, .import-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.btn-xs {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+/* SRS Flashcard Learning Section */
+.srs-study-section {
+  background-color: var(--bg-secondary);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.srs-stats-bar {
+  display: flex;
+  gap: 1.5rem;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 0.5rem 1.25rem;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.srs-stat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.srs-stat-item .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.srs-stat-item .dot.bg-blue { background-color: #3b82f6; box-shadow: 0 0 8px rgba(59, 130, 246, 0.6); }
+.srs-stat-item .dot.bg-red { background-color: #ef4444; box-shadow: 0 0 8px rgba(239, 68, 68, 0.6); }
+.srs-stat-item .dot.bg-green { background-color: #10b981; box-shadow: 0 0 8px rgba(16, 185, 129, 0.6); }
+
+/* Palace card perspective & 3D card layout */
+.palace-card-perspective {
+  perspective: 1500px;
+  width: 100%;
+  max-width: 380px;
+  aspect-ratio: 4/5;
+  cursor: pointer;
+  border-radius: 20px;
+  outline: none;
+}
+
+.palace-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-style: preserve-3d;
+}
+
+.palace-card-inner.flipped {
+  transform: rotateY(180deg) scale(1.02);
+}
+
+.palace-card-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 20px;
+  padding: 2.2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  background-color: var(--card-bg);
+  color: var(--text-dark);
+}
+
+.palace-card-front {
+  background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+  z-index: 2;
+}
+
+.palace-card-back {
+  transform: rotateY(180deg);
+  background: linear-gradient(135deg, #ffffff 0%, #f0fbf9 100%);
+  border-color: var(--primary);
+}
+
+.palace-card-face::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 50%);
+  pointer-events: none;
+}
+
+.palace-word-txt {
+  color: var(--primary);
+  font-family: var(--font-en);
+  font-size: 2.4rem;
+  font-weight: 700;
+  line-height: 1.1;
+  word-break: break-word;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.5px;
+}
+
+.palace-phonetic-txt {
+  color: var(--text-grey);
+  font-family: var(--font-en);
+  font-size: 1.1rem;
+  font-weight: 400;
+  margin-bottom: 0.5rem;
+}
+
+.palace-syllables-txt {
+  color: var(--text-grey);
+  font-family: var(--font-en);
+  font-size: 1.1rem;
+  font-weight: 400;
+  display: inline-block;
+  padding-bottom: 2px;
+  border-bottom: 1.5px dotted var(--text-grey);
+  width: max-content;
+  max-width: 100%;
+}
+
+.palace-explanation-txt {
+  color: var(--text-dark);
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin-top: 0.8rem;
+  word-break: break-word;
+}
+
+.palace-card-back .pronounce-btn {
+  margin-top: 1.5rem;
+  background-color: var(--primary-light);
+  color: var(--primary);
+}
+
+.palace-card-back .pronounce-btn:hover {
+  background-color: var(--primary);
+  color: white;
+}
+
+.card-prompt {
+  font-size: 0.75rem;
+  color: var(--text-grey);
+  opacity: 0.75;
+  margin-top: 2rem;
+  font-weight: 500;
+}
+
+/* SRS Buttons Section */
+.srs-actions-wrapper {
+  width: 100%;
+  max-width: 380px;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.btn-lg {
+  padding: 0.95rem 2rem;
+  font-size: 1.05rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(43, 177, 165, 0.2);
+}
+
+.srs-rating-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.6rem;
+  width: 100%;
+}
+
+.btn-rate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 0.25rem;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  color: white;
+  transition: var(--transition-smooth);
+}
+
+.btn-rate:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+}
+
+.btn-rate:active {
+  transform: translateY(0);
+}
+
+.btn-rate-again {
+  background-color: #ef4444;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+}
+
+.btn-rate-hard {
+  background-color: #f97316;
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.25);
+}
+
+.btn-rate-good {
+  background-color: #10b981;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+
+.btn-rate-easy {
+  background-color: #3b82f6;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+}
+
+.rate-time {
+  font-size: 0.7rem;
+  opacity: 0.85;
+  font-weight: 600;
+  font-family: var(--font-en);
+  margin-bottom: 2px;
+}
+
+.rate-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* Session Completed/No cards to review state */
+.palace-done-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  padding: 2.2rem 1.5rem;
+  width: 100%;
+  max-width: 380px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  animation: float 5s ease-in-out infinite;
+}
+
+.celebrate-emoji {
+  font-size: 3.5rem;
+}
+
+.palace-done-card h3 {
+  font-size: 1.35rem;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.palace-done-card p {
+  font-size: 0.88rem;
+  color: var(--text-grey);
+  line-height: 1.4;
+}
+
+.next-due-card {
+  background: rgba(43, 177, 165, 0.08);
+  border: 1px solid rgba(43, 177, 165, 0.15);
+  padding: 0.85rem 1.5rem;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.next-due-title {
+  font-size: 0.75rem;
+  color: var(--text-grey);
+  font-weight: 500;
+}
+
+.next-due-time-val {
+  font-size: 1.25rem;
+  color: var(--primary);
+  font-weight: 700;
+  font-family: var(--font-en);
+}
+
+/* Palace Words Library Management Section */
+.palace-management-section {
+  background-color: var(--bg-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.management-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.management-header h3 {
+  font-size: 1.1rem;
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.management-header input {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  color: #ffffff;
+  font-size: 0.88rem;
+  width: 250px;
+  outline: none;
+  transition: var(--transition-smooth);
+}
+
+.management-header input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(43, 177, 165, 0.25);
+}
+
+.palace-words-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 0.85rem;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 0.4rem;
+}
+
+/* Custom Scrollbar for Single Word list */
+.palace-words-list::-webkit-scrollbar {
+  width: 6px;
+  display: block;
+}
+
+.palace-words-list::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.palace-words-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.palace-words-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.palace-word-row {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  position: relative;
+  transition: var(--transition-smooth);
+  padding-right: 2.2rem;
+}
+
+.palace-word-row:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(43, 177, 165, 0.2);
+  transform: translateY(-1px);
+}
+
+.palace-row-word {
+  font-family: var(--font-en);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+  word-break: break-all;
+}
+
+.palace-row-exp {
+  font-size: 0.85rem;
+  color: var(--text-grey);
+  word-break: break-all;
+}
+
+.palace-row-meta {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.badge-srs-status {
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.badge-new {
+  background: rgba(59, 130, 246, 0.12);
+  color: #93c5fd;
+}
+
+.badge-learn {
+  background: rgba(239, 68, 68, 0.12);
+  color: #fca5a5;
+}
+
+.badge-review {
+  background: rgba(16, 185, 129, 0.12);
+  color: #6ee7b7;
+}
+
+.btn-delete-row {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: transparent;
+  border: none;
+  color: #fca5a5;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  width: 24px;
+  height: 24px;
+  transition: var(--transition-smooth);
+  opacity: 0.55;
+}
+
+.btn-delete-row:hover {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+  opacity: 1;
+  transform: scale(1.08);
+}
+
+.btn-icon {
+  background: transparent;
+  border: none;
+  color: var(--text-grey);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: var(--transition-smooth);
+}
+
+.btn-icon:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 768px) {
+  .palace-header-panel {
+    grid-template-columns: 1fr;
+  }
+  .management-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .management-header input {
+    width: 100%;
+  }
+  .srs-study-section {
+    padding: 1.25rem;
+  }
+  .btn-rate {
+    padding: 0.6rem 0.15rem;
+  }
+  .rate-label {
+    font-size: 0.75rem;
+  }
+}
