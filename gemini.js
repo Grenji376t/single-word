@@ -22,7 +22,12 @@ export async function analyzeTextbookImage(base64Image, mimeType, apiKey) {
     throw new Error("請先設定您的 Gemini API Key！");
   }
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+  const models = [
+    'gemini-2.5-flash',
+    'gemini-2.5-pro',
+    'gemini-1.5-flash',
+    'gemini-1.5-pro'
+  ];
 
   const prompt = `你是一個專業的英文學習助理。請分析這張課本隨手拍照片中的所有英文單字或片語。
 請提取每個單字的以下資訊：
@@ -62,33 +67,43 @@ export async function analyzeTextbookImage(base64Image, mimeType, apiKey) {
     }
   };
 
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(payload)
-  });
+  const errors = [];
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    const errorMessage = errorData.error?.message || `HTTP error! status: ${response.status}`;
-    throw new Error(`Gemini API 呼叫失敗: ${errorMessage}`);
-  }
+  for (const model of models) {
+    try {
+      console.log(`嘗試使用模型: ${model}`);
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
-  const result = await response.json();
-  
-  try {
-    const jsonText = result.candidates[0].content.parts[0].text;
-    const parsedData = JSON.parse(jsonText.trim());
-    
-    if (!parsedData.words || !Array.isArray(parsedData.words)) {
-      throw new Error("Gemini 回傳的資料結構不符合預期。");
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.error?.message || `HTTP error! status: ${response.status}`;
+        throw new Error(`API 錯誤: ${errorMessage}`);
+      }
+
+      const result = await response.json();
+      
+      const jsonText = result.candidates[0].content.parts[0].text;
+      const parsedData = JSON.parse(jsonText.trim());
+      
+      if (!parsedData.words || !Array.isArray(parsedData.words)) {
+        throw new Error("回傳的資料結構不符合預期（缺少 words 陣列）。");
+      }
+      
+      console.log(`模型 ${model} 分析成功！`);
+      return parsedData.words;
+    } catch (err) {
+      console.warn(`模型 ${model} 嘗試失敗:`, err);
+      errors.push(`${model}: ${err.message}`);
     }
-    
-    return parsedData.words;
-  } catch (err) {
-    console.error("解析 Gemini 回傳結果時出錯:", err, result);
-    throw new Error("無法解析 Gemini 的回傳結果，請確保圖片清晰並重試。");
   }
+
+  throw new Error(`所有 Gemini 模型分析皆失敗，請確認金鑰與網路連線後重試。\n詳細錯誤：\n${errors.join('\n')}`);
 }
