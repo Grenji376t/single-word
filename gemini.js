@@ -32,8 +32,8 @@ export async function analyzeTextbookImage(base64Image, mimeType, apiKey) {
   const prompt = `你是一個專業的英文學習助理。請分析這張課本隨手拍照片中的所有英文單字或片語。
 請提取每個單字的以下資訊：
 1. 單字本身 (word) - 例如: "America" 或 "a little"
-2. 音標 (phonetic) - IPA 格式，如 "/əˈmɛrɪkə/"
-3. 音節拆解 (syllables) - 以 " · " 間隔，如 "Amer · i · ca"。如果單音節單字則直接填寫原單字。
+2. 音標 (phonetic) - 請務必統一使用台灣學校教育標準的 KK 音標 (K.K. Phonetic Symbols)，並使用中括號包覆，如 "[əˈmɛrɪkə]" 或 "[ˈtɛmpəl]"
+3. 音節拆解 (syllables) - 請依據美式字典（如 Merriam-Webster）的規範劃分單字音節，並以 " · " 符號隔開，如 "Amer · i · ca"。若為單音節單字則直接填寫原單字。
 4. 詞性與中文解釋 (explanation) - 如 "(名) 美國"、"(phr.) 一些;少量的"、"(adj.) 受歡迎的;流行的"
 
 請務必嚴格遵循以下 JSON 格式回傳，不要包含任何額外的 Markdown 標記 (\`\`\`json) 或聊天文字：
@@ -41,7 +41,7 @@ export async function analyzeTextbookImage(base64Image, mimeType, apiKey) {
   "words": [
     {
       "word": "America",
-      "phonetic": "/əˈmɛrɪkə/",
+      "phonetic": "[əˈmɛrɪkə]",
       "syllables": "Amer · i · ca",
       "explanation": "(n.) 美國"
     }
